@@ -1,0 +1,43 @@
+<h1>Record Payment</h1>
+<div class="grid">
+  <div class="card">
+    <h3>Customer Deposit / Payment</h3>
+    <form method="post" action="/payments">
+      <div class="formgrid">
+        <p><label>Booking</label><select class="input" name="booking_id" required><% bookings.forEach(function(b) { %><option value="<%= b.id %>"><%= b.booking_no %> - <%= b.customer_name %></option><% }); %></select></p>
+        <p><label>Date</label><input class="input" type="date" name="payment_date"></p>
+        <p><label>Amount (LKR)</label><input class="input" type="number" step=".01" min="0" name="amount" required></p>
+        <p><label>Payment Method</label><select class="input" id="method" name="method" onchange="toggleBank()"><option>Cash</option><option>Bank Transfer</option><option>Bank Deposit</option><option>Card</option><option>Cheque</option><option>Other</option></select></p>
+        <p id="bankBox" style="display:none"><label>Deposit Bank Account</label><select class="input" name="bank_account_id"><option value="">Select bank account</option><% accounts.forEach(function(a){ %><option value="<%= a.id %>"><%= a.bank_name %> — <%= a.account_name || 'Hotel Account' %> — A/C <%= a.account_no %></option><% }); %></select></p>
+        <p><label>Reference / Receipt No.</label><input class="input" name="reference_no"></p>
+        <p><label>Notes</label><input class="input" name="notes"></p>
+      </div>
+      <button type="submit">Record Payment</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Add / Save Bank Account</h3>
+    <p class="small">The bank list is preloaded from Sri Lankan licensed banks. Add your hotel's actual account number once; it will then appear in the payment dropdown.</p>
+    <form method="post" action="/bank-accounts">
+      <p><label>Bank</label><select class="input" name="bank_name" required><option value="">Select bank</option><% banks.forEach(function(b){ %><option value="<%= b %>"><%= b %></option><% }); %></select></p>
+      <p><label>Account Name</label><input class="input" name="account_name" placeholder="Hotel Main Account"></p>
+      <p><label>Account No.</label><input class="input" name="account_no" required placeholder="Enter account number"></p>
+      <p><label>Branch</label><input class="input" name="branch" placeholder="Kalmunai"></p>
+      <p><label>Account Type</label><select class="input" name="account_type"><option>Bank</option><option>Savings</option><option>Current</option></select></p>
+      <button type="submit">Save Bank Account</button>
+    </form>
+  </div>
+</div>
+<div class="card">
+  <h3>Saved Bank Accounts</h3>
+  <table class="table"><tr><th>Bank</th><th>Account Name</th><th>Account No.</th><th>Branch</th><th>Action</th></tr>
+  <% accounts.forEach(function(a){ %><tr><td><%= a.bank_name %></td><td><%= a.account_name || '' %></td><td><b><%= a.account_no %></b></td><td><%= a.branch || '' %></td><td><form method="post" action="/bank-accounts/<%= a.id %>/delete" onsubmit="return confirm('Deactivate this bank account?')"><button class="danger">Remove</button></form></td></tr><% }); %>
+  </table>
+</div>
+<div class="card">
+  <h3>Payment History</h3>
+  <table class="table"><tr><th>Date</th><th>Booking</th><th>Customer</th><th>Amount</th><th>Method</th><th>Bank Account</th><th>Reference</th></tr>
+    <% rows.forEach(function(r) { %><tr><td><%= r.payment_date %></td><td><%= r.booking_no %></td><td><%= r.customer_name %></td><td><%= money(r.amount) %></td><td><%= r.method || '' %></td><td><%= r.bank_name ? r.bank_name+' — '+(r.account_no||'') : '-' %></td><td><%= r.reference_no || '' %></td></tr><% }); %>
+  </table>
+</div>
+<script>function toggleBank(){var m=document.getElementById('method').value;document.getElementById('bankBox').style.display=(m==='Bank Transfer'||m==='Bank Deposit')?'block':'none';}toggleBank();</script>

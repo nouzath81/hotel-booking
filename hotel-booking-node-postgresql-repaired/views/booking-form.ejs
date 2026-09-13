@@ -1,0 +1,35 @@
+<h1>New Booking</h1>
+<div class="card">
+  <form method="post" action="/bookings">
+    <div class="formgrid">
+      <p><label>Customer name *</label><input class="input" name="customer_name" required></p>
+      <p><label>Phone</label><input class="input" name="phone"></p>
+      <p><label>Email</label><input class="input" name="email"></p>
+      <p><label>Address</label><input class="input" name="address"></p>
+      <p><label>Room type</label>
+        <select class="input" name="room_type">
+          <option value="">Select</option>
+          <% types.forEach(function(t) { %>
+            <option value="<%= t.type_name %>"><%= t.type_name %> - <%= money(t.default_rate) %></option>
+          <% }); %>
+        </select>
+      </p>
+      <p><label>Room no(s)</label><input class="input" name="room_no" placeholder="101,102"></p>
+      <p><label>Room count</label><input class="input" type="number" name="room_count" value="1" min="1"></p>
+      <p><label>Check-in</label><input class="input" type="date" name="checkin_date" required></p>
+      <p><label>Check-out</label><input class="input" type="date" name="checkout_date" required></p>
+      <p><label>Rate / night</label><input class="input" type="number" step=".01" name="rate_per_night" value="0"></p>
+      <p><label>Extra charges</label><input class="input" type="number" step=".01" name="extra_charges" value="0"></p>
+      <p><label>Discount</label><input class="input" type="number" step=".01" name="discount" value="0"></p>
+      <p><label>Tax %</label><input class="input" type="number" step=".01" name="tax_percent" value="0"></p>
+      <p><label>Advance paid</label><input class="input" type="number" step=".01" name="advance_paid" value="0"></p>
+      <p><label>Status</label>
+        <select class="input" name="status">
+          <option>Confirmed</option><option>Pending</option><option>Checked-In</option><option>Checked-Out</option><option>Cancelled</option>
+        </select>
+      </p>
+      <p style="grid-column:1/-1"><label>Notes</label><textarea class="input" name="notes"></textarea></p>
+    </div>
+    <button type="submit">Create Booking</button>
+  </form>
+</div>

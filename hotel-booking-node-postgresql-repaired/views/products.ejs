@@ -1,0 +1,11 @@
+<h1>POS Products</h1>
+<div class="card"><form method="post" action="/pos/products"><div class="formgrid">
+  <p><input class="input" name="name" placeholder="Product name" required></p>
+  <p><input class="input" name="sku" placeholder="SKU"></p>
+  <p><input class="input" name="category" placeholder="Category"></p>
+  <p><input class="input" type="number" step=".01" name="price" placeholder="Price" required></p>
+  <p><input class="input" type="number" name="stock_qty" placeholder="Stock"></p>
+</div><button type="submit">Add Product</button></form></div>
+<div class="card"><table class="table"><tr><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th></tr>
+  <% rows.forEach(function(r) { %><tr><td><%= r.name %></td><td><%= r.sku || '' %></td><td><%= r.category || '' %></td><td><%= money(r.price) %></td><td><%= r.stock_qty %></td></tr><% }); %>
+</table></div>

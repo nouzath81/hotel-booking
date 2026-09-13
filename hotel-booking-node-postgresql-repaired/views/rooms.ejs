@@ -1,0 +1,21 @@
+<h1>Rooms & Room Types</h1>
+<div class="grid">
+  <div class="card"><h3>Add/Update Room Type</h3><form method="post" action="/room-types">
+    <p><input class="input" name="type_name" placeholder="Standard" required></p>
+    <p><input class="input" type="number" name="total_rooms" placeholder="Total rooms"></p>
+    <p><input class="input" type="number" step=".01" name="default_rate" placeholder="Default rate"></p>
+    <button type="submit">Save</button>
+  </form></div>
+  <div class="card"><h3>Add Room</h3><form method="post" action="/rooms">
+    <p><input class="input" name="room_no" placeholder="101" required></p>
+    <p><input class="input" name="room_type" placeholder="Standard" required></p>
+    <p><select class="input" name="status"><option>Active</option><option>Maintenance</option><option>Inactive</option></select></p>
+    <button type="submit">Save Room</button>
+  </form></div>
+</div>
+<div class="card"><h3>Room Types</h3><table class="table"><tr><th>Type</th><th>Total</th><th>Rate</th></tr>
+  <% types.forEach(function(t) { %><tr><td><%= t.type_name %></td><td><%= t.total_rooms %></td><td><%= money(t.default_rate) %></td></tr><% }); %>
+</table></div>
+<div class="card"><h3>Individual Rooms</h3><table class="table"><tr><th>Room</th><th>Type</th><th>Status</th></tr>
+  <% rooms.forEach(function(r) { %><tr><td><%= r.room_no %></td><td><%= r.room_type %></td><td><%= r.status %></td></tr><% }); %>
+</table></div>

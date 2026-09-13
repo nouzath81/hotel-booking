@@ -1,0 +1,7 @@
+<h1>Reports</h1>
+<div class="card"><h3>Booking summary</h3><table class="table"><tr><th>Room type</th><th>Status</th><th>Bookings</th><th>Revenue</th></tr>
+  <% bookings.forEach(function(r) { %><tr><td><%= r.room_type || 'N/A' %></td><td><%= r.status %></td><td><%= r.count %></td><td><%= money(r.revenue) %></td></tr><% }); %>
+</table></div>
+<div class="card"><h3>Petty cash</h3><table class="table"><tr><th>Type</th><th>Amount</th></tr>
+  <% cash.forEach(function(r) { %><tr><td><%= r.type %></td><td><%= money(r.amount) %></td></tr><% }); %>
+</table></div>

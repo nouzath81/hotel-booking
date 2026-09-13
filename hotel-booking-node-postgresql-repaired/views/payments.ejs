@@ -1,0 +1,20 @@
+<h1>Payments</h1>
+<div class="card">
+  <form method="post" action="/payments">
+    <div class="formgrid">
+      <p><label>Booking</label><select class="input" name="booking_id" required>
+        <% bookings.forEach(function(b) { %><option value="<%= b.id %>"><%= b.booking_no %> - <%= b.customer_name %></option><% }); %>
+      </select></p>
+      <p><label>Date</label><input class="input" type="date" name="payment_date"></p>
+      <p><label>Amount</label><input class="input" type="number" step=".01" name="amount" required></p>
+      <p><label>Method</label><input class="input" name="method" value="Cash"></p>
+      <p><label>Notes</label><input class="input" name="notes"></p>
+    </div>
+    <button type="submit">Record Payment</button>
+  </form>
+</div>
+<div class="card">
+  <table class="table"><tr><th>Date</th><th>Booking</th><th>Customer</th><th>Amount</th><th>Method</th></tr>
+    <% rows.forEach(function(r) { %><tr><td><%= r.payment_date %></td><td><%= r.booking_no %></td><td><%= r.customer_name %></td><td><%= money(r.amount) %></td><td><%= r.method || '' %></td></tr><% }); %>
+  </table>
+</div>

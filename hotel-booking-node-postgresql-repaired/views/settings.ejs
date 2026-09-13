@@ -1,0 +1,11 @@
+<h1>Company Settings</h1>
+<div class="card"><form method="post" action="/settings"><div class="formgrid">
+  <% ['company_name','address','phone','email','website','footer_note','pos_tax_percent'].forEach(function(k) { %>
+    <p><label><%= k %></label><input class="input" name="<%= k %>" value="<%= s[k] || '' %>"></p>
+  <% }); %>
+</div><button type="submit">Save Settings</button></form></div>
+<div class="card"><h3>Create User</h3><form method="post" action="/users"><div class="formgrid">
+  <p><input class="input" name="username" placeholder="username" required></p>
+  <p><input class="input" type="password" name="password" placeholder="password" required></p>
+  <p><select class="input" name="role"><option>staff</option><option>admin</option></select></p>
+</div><button type="submit">Create User</button></form></div>

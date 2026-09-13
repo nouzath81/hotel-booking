@@ -1,0 +1,16 @@
+<h1>Petty Cash</h1>
+<div class="card">
+  <form method="post" action="/petty-cash">
+    <div class="formgrid">
+      <p><label>Date</label><input class="input" type="date" name="entry_date"></p>
+      <p><label>Description</label><input class="input" name="description" required></p>
+      <p><label>Category</label><input class="input" name="category"></p>
+      <p><label>Type</label><select class="input" name="type"><option>Out</option><option>In</option></select></p>
+      <p><label>Amount</label><input class="input" type="number" step=".01" name="amount" required></p>
+    </div>
+    <button type="submit">Add Entry</button>
+  </form>
+</div>
+<div class="card"><table class="table"><tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th></tr>
+  <% rows.forEach(function(r) { %><tr><td><%= r.entry_date %></td><td><%= r.description %></td><td><%= r.category || '' %></td><td><%= r.type %></td><td><%= money(r.amount) %></td></tr><% }); %>
+</table></div>

@@ -1,0 +1,33 @@
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+  <div><h1 style="margin-bottom:4px">Dashboard</h1><div class="small"><span id="dashLiveDot" style="color:#16a34a">●</span> Live booking status</div></div>
+  <a class="btn" href="/bookings/new">+ New Booking</a>
+</div>
+<div class="grid">
+  <div class="card">Total Rooms<div class="stat" id="totalRooms"><%=stats.rooms.total%></div></div>
+  <div class="card">Booked Rooms<div class="stat" id="bookedRooms"><%=stats.rooms.booked%></div></div>
+  <div class="card">Remaining Rooms<div class="stat" id="remainingRooms"><%=stats.rooms.remaining%></div></div>
+  <div class="card">Today's Bookings<div class="stat" id="todayBookings"><%=stats.occupied.booking_count%></div></div>
+  <div class="card">Invoice Revenue<div class="stat" id="invoiceRevenue"><%=money(stats.bookings.revenue)%></div></div>
+  <div class="card">Advance Paid<div class="stat" id="advancePaid"><%=money(stats.bookings.advance)%></div></div>
+</div>
+<div class="card live-card"><h3>Room Availability Today</h3>
+  <p><strong id="dashBooked"><%=stats.rooms.booked%></strong> booked &nbsp; | &nbsp; <strong id="dashRemaining"><%=stats.rooms.remaining%></strong> remaining &nbsp; | &nbsp; <strong id="dashTotal"><%=stats.rooms.total%></strong> total</p>
+</div>
+<div class="card" style="overflow-x:auto"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Latest Booking Details</h3><a href="/bookings">View all</a></div>
+<table class="table"><thead><tr><th>Customer Name</th><th>Phone No.</th><th>WhatsApp</th><th>Booked Room</th><th>Room No.</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Advance Pay</th><th>Status</th></tr></thead><tbody id="dashBookingRows"></tbody></table></div>
+<div class="card"><h3>Quick Actions</h3><a class="btn" href="/bookings/new">+ New Booking</a> <a class="btn" href="/payments">Record Payment</a> <a class="btn" href="/pos">Open POS</a></div>
+<script>
+(function(){
+ const esc=v=>String(v??'-').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));
+ const date=v=>v?String(v).slice(0,10):'-';
+ const money=v=>Number(v||0).toFixed(2);
+ const rows=document.getElementById('dashBookingRows'),dot=document.getElementById('dashLiveDot');
+ async function refresh(){try{
+   const [dr,br]=await Promise.all([fetch('/api/dashboard?ts='+Date.now(),{cache:'no-store'}),fetch('/api/bookings?ts='+Date.now(),{cache:'no-store'})]);
+   if(!dr.ok||!br.ok) throw new Error(); const d=await dr.json(), bs=await br.json();
+   document.getElementById('totalRooms').textContent=d.rooms.total; document.getElementById('bookedRooms').textContent=d.rooms.booked; document.getElementById('remainingRooms').textContent=d.rooms.remaining; document.getElementById('todayBookings').textContent=d.occupied.booking_count; document.getElementById('invoiceRevenue').textContent=money(d.bookings.revenue); document.getElementById('advancePaid').textContent=money(d.bookings.advance); document.getElementById('dashBooked').textContent=d.rooms.booked; document.getElementById('dashRemaining').textContent=d.rooms.remaining; document.getElementById('dashTotal').textContent=d.rooms.total;
+   rows.innerHTML=bs.slice(0,10).map(r=>`<tr><td><strong>${esc(r.customer_name)}</strong></td><td>${esc(r.phone||'-')}</td><td>${r.whatsapp_no?`<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${encodeURIComponent(r.whatsapp_no)}?text=${encodeURIComponent(`Booking ${r.booking_no} - ${r.customer_name} | Room: ${r.room_no||r.room_type||''} | Check-in: ${date(r.checkin_date)} | Check-out: ${date(r.checkout_date)} | Nights: ${r.nights} | Advance: LKR ${money(r.advance_paid)}`)}">WhatsApp</a>`:'-'}</td><td>${esc(r.room_type||'-')}${Number(r.room_count||1)>1?' ('+esc(r.room_count)+' rooms)':''}</td><td>${esc(r.room_no||'-')}</td><td>${date(r.checkin_date)}</td><td>${date(r.checkout_date)}</td><td><strong>${esc(r.nights)}</strong></td><td>${money(r.advance_paid)}</td><td><span class="badge">${esc(r.status)}</span></td></tr>`).join(''); dot.style.color='#16a34a';
+ }catch(e){dot.style.color='#dc2626';}}
+ refresh(); setInterval(refresh,3000);
+})();
+</script>

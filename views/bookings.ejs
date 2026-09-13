@@ -1,0 +1,77 @@
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+  <div>
+    <h1 style="margin-bottom:4px">Bookings</h1>
+    <div class="small"><span id="liveDot" style="color:#16a34a">●</span> Live updates every 3 seconds</div>
+  </div>
+  <a class="btn" href="/bookings/new">+ New Booking</a>
+</div>
+<div class="card" style="overflow-x:auto">
+  <table class="table" id="bookingTable">
+    <thead>
+      <tr>
+        <th>Booking #</th>
+        <th>Customer Name</th>
+        <th>Phone No.</th>
+        <th>WhatsApp</th>
+        <th>Booked Room</th>
+        <th>Room No.</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Nights</th>
+        <th>Total</th>
+        <th>Advance Paid</th>
+        <th>Balance</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="bookingRows">
+      <% rows.forEach(function(r) { %>
+        <tr>
+          <td><strong><%= r.booking_no %></strong></td>
+          <td><%= r.customer_name %></td>
+          <td><%= r.phone || '-' %></td>
+          <td><% if (r.whatsapp_no) { %><a class="btn" target="_blank" rel="noopener" href="https://wa.me/<%= r.whatsapp_no %>?text=<%= encodeURIComponent('Booking '+r.booking_no+' - '+r.customer_name+' | Room: '+(r.room_no||r.room_type||'')+' | Check-in: '+String(r.checkin_date).slice(0,10)+' | Check-out: '+String(r.checkout_date).slice(0,10)+' | Nights: '+r.nights+' | Advance: LKR '+Number(r.advance_paid||0).toFixed(2)) %>">WhatsApp</a><% } else { %>-<% } %></td>
+          <td><%= r.room_type || '-' %> <%= r.room_count > 1 ? '(' + r.room_count + ' rooms)' : '' %></td>
+          <td><%= r.room_no || '-' %></td>
+          <td><%= r.checkin_date && r.checkin_date.toISOString ? r.checkin_date.toISOString().slice(0,10) : r.checkin_date %></td>
+          <td><%= r.checkout_date && r.checkout_date.toISOString ? r.checkout_date.toISOString().slice(0,10) : r.checkout_date %></td>
+          <td><strong><%= r.nights %></strong></td>
+          <td><%= money((Number(r.nights||0)*Number(r.rate_per_night||0))+Number(r.extra_charges||0)-Number(r.discount||0)) %></td>
+          <td><%= money(r.advance_paid) %></td>
+          <td><%= money(Math.max(0,((Number(r.nights||0)*Number(r.rate_per_night||0))+Number(r.extra_charges||0)-Number(r.discount||0))-Number(r.advance_paid||0))) %></td>
+          <td><span class="badge"><%= r.status %></span></td>
+          <td>
+            <form method="post" action="/bookings/<%= r.id %>/delete" onsubmit="return confirm('Delete booking?')">
+              <button type="submit" class="danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<script>
+(function(){
+  const tbody=document.getElementById('bookingRows');
+  const dot=document.getElementById('liveDot');
+  const money=v=>Number(v||0).toFixed(2);
+  const esc=v=>String(v??'-').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));
+  const date=v=>v?String(v).slice(0,10):'-';
+  async function refresh(){
+    try{
+      const res=await fetch('/api/bookings?ts='+Date.now(),{cache:'no-store'});
+      if(!res.ok) throw new Error('refresh failed');
+      const rows=await res.json();
+      tbody.innerHTML=rows.map(r=>{
+        const base=(Number(r.nights||0)*Number(r.rate_per_night||0))+Number(r.extra_charges||0)-Number(r.discount||0);
+        const balance=Math.max(0,base-Number(r.advance_paid||0));
+        const roomLabel=esc(r.room_type||'-')+(Number(r.room_count||1)>1?' ('+esc(r.room_count)+' rooms)':'');
+        return `<tr><td><strong>${esc(r.booking_no)}</strong></td><td>${esc(r.customer_name)}</td><td>${esc(r.phone||'-')}</td><td>${r.whatsapp_no?`<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${encodeURIComponent(r.whatsapp_no)}?text=${encodeURIComponent(`Booking ${r.booking_no} - ${r.customer_name} | Room: ${r.room_no||r.room_type||''} | Check-in: ${date(r.checkin_date)} | Check-out: ${date(r.checkout_date)} | Nights: ${r.nights} | Advance: LKR ${money(r.advance_paid)}`)}">WhatsApp</a>`:'-'}</td><td>${roomLabel}</td><td>${esc(r.room_no||'-')}</td><td>${date(r.checkin_date)}</td><td>${date(r.checkout_date)}</td><td><strong>${esc(r.nights)}</strong></td><td>${money(base)}</td><td>${money(r.advance_paid)}</td><td>${money(balance)}</td><td><span class="badge">${esc(r.status)}</span></td><td><form method="post" action="/bookings/${encodeURIComponent(r.id)}/delete" onsubmit="return confirm('Delete booking?')"><button type="submit" class="danger">Delete</button></form></td></tr>`;
+      }).join('');
+      dot.style.color='#16a34a';
+    }catch(e){dot.style.color='#dc2626';}
+  }
+  setInterval(refresh,3000);
+})();
+</script>

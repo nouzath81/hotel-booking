@@ -1,0 +1,37 @@
+<h1>Point of Sale</h1>
+<div class="card">
+  <p>Select products and enter quantity. The sale is saved directly in PostgreSQL and stock is reduced.</p>
+  <div class="formgrid">
+    <p><label>Customer</label><input id="customer" class="input"></p>
+    <p><label>Discount</label><input id="discount" class="input" type="number" value="0" step=".01"></p>
+    <p><label>Tax %</label><input id="tax" class="input" type="number" value="0" step=".01"></p>
+    <p><label>Payment</label><select id="method" class="input"><option>Cash</option><option>Card</option><option>Bank</option><option>Online</option></select></p>
+  </div>
+  <div class="formgrid">
+    <% products.forEach(function(p) { %>
+      <div class="card">
+        <b><%= p.name %></b><div><%= money(p.price) %> | Stock: <%= p.stock_qty %></div>
+        <input class="input qty" data-id="<%= p.id %>" data-name="<%= p.name %>" data-price="<%= p.price %>" type="number" min="0" max="<%= p.stock_qty %>" value="0">
+      </div>
+    <% }); %>
+  </div>
+  <button type="button" onclick="makeSale()">Complete Sale</button><h3 id="total"></h3>
+</div>
+<div class="card"><h3>Recent Sales</h3><table class="table"><tr><th>No.</th><th>Date</th><th>Total</th><th>Payment</th></tr>
+  <% sales.forEach(function(s) { %><tr><td><%= s.sale_no %></td><td><%= s.created_at %></td><td><%= money(s.total) %></td><td><%= s.payment_method %></td></tr><% }); %>
+</table></div>
+<script>
+async function makeSale(){
+  const items=[];
+  document.querySelectorAll('.qty').forEach(function(x){const qty=Number(x.value);if(qty>0)items.push({product_id:Number(x.dataset.id),name:x.dataset.name,unit_price:Number(x.dataset.price),qty});});
+  if(!items.length){alert('Select a product');return;}
+  const f=new FormData();
+  f.append('items',JSON.stringify(items));
+  f.append('customer_name',document.getElementById('customer').value);
+  f.append('discount',document.getElementById('discount').value);
+  f.append('tax_percent',document.getElementById('tax').value);
+  f.append('payment_method',document.getElementById('method').value);
+  const response=await fetch('/pos/sale',{method:'POST',body:f});
+  if(response.redirected) location.href=response.url; else location.reload();
+}
+</script>

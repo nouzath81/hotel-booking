@@ -1,0 +1,23 @@
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+  <h1>Bookings</h1><a class="btn" href="/bookings/new">+ New Booking</a>
+</div>
+<div class="card">
+  <table class="table">
+    <tr><th>No.</th><th>Customer</th><th>Room</th><th>Dates</th><th>Status</th><th>Advance</th><th>Action</th></tr>
+    <% rows.forEach(function(r) { %>
+      <tr>
+        <td><%= r.booking_no %></td>
+        <td><%= r.customer_name %><br><span class="small"><%= r.phone || '' %></span></td>
+        <td><%= r.room_type || '' %> <%= r.room_no || '' %></td>
+        <td><%= r.checkin_date && r.checkin_date.toISOString ? r.checkin_date.toISOString().slice(0,10) : r.checkin_date %> → <%= r.checkout_date && r.checkout_date.toISOString ? r.checkout_date.toISOString().slice(0,10) : r.checkout_date %></td>
+        <td><%= r.status %></td>
+        <td><%= money(r.advance_paid) %></td>
+        <td>
+          <form method="post" action="/bookings/<%= r.id %>/delete" onsubmit="return confirm('Delete booking?')">
+            <button type="submit" class="danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </table>
+</div>

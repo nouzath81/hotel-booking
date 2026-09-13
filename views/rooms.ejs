@@ -1,0 +1,43 @@
+<h1>Room Management</h1>
+<p class="small">Create, update and delete room types, then assign each physical room number to a room type.</p>
+<div class="grid">
+  <div class="card">
+    <h3>Add / Update Room Type</h3>
+    <form method="post" action="/room-types">
+      <input type="hidden" name="old_type_name" id="old_type_name">
+      <p><label>Room type</label><input class="input" id="type_name" name="type_name" placeholder="Deluxe" required></p>
+      <p><label>Default rate / night</label><input class="input" id="default_rate" type="number" step=".01" name="default_rate" placeholder="8000"></p>
+      <button type="submit" id="typeSave">Add Room Type</button>
+      <button type="button" onclick="clearTypeForm()">Clear</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Assign Room Number</h3>
+    <form method="post" action="/rooms">
+      <p><label>Room No.</label><input class="input" name="room_no" placeholder="101" required></p>
+      <p><label>Room Type</label><select class="input" name="room_type" required><option value="">Select room type</option><% types.forEach(function(t){ %><option value="<%= t.type_name %>"><%= t.type_name %></option><% }); %></select></p>
+      <p><label>Status</label><select class="input" name="status"><option>Active</option><option>Maintenance</option><option>Inactive</option></select></p>
+      <button type="submit">Assign / Update Room</button>
+    </form>
+  </div>
+</div>
+<div class="card">
+  <h3>Room Types</h3>
+  <table class="table"><tr><th>Room Type</th><th>Assigned</th><th>Active</th><th>Rate / Night</th><th>Actions</th></tr>
+  <% types.forEach(function(t){ %><tr><td><b><%= t.type_name %></b></td><td><%= t.assigned_rooms %></td><td><%= t.active_rooms %></td><td><%= money(t.default_rate) %></td><td>
+    <button type="button" onclick='editType(<%- JSON.stringify({id:t.id,type_name:t.type_name,default_rate:t.default_rate}) %>)'>Edit</button>
+    <form style="display:inline" method="post" action="/room-types/<%= t.id %>/delete" onsubmit="return confirm('Delete room type <%= t.type_name %>?')"><button class="danger" type="submit">Delete</button></form>
+  </td></tr><% }); %>
+  </table>
+</div>
+<div class="card">
+  <h3>Assigned Room Numbers</h3>
+  <table class="table"><tr><th>Room No.</th><th>Room Type</th><th>Status</th><th>Action</th></tr>
+  <% rooms.forEach(function(r){ %><tr><td><b><%= r.room_no %></b></td><td><%= r.room_type %></td><td><%= r.status %></td><td><form method="post" action="/rooms/<%= r.id %>/delete" onsubmit="return confirm('Delete room <%= r.room_no %>?')"><button class="danger" type="submit">Delete</button></form></td></tr><% }); %>
+  </table>
+  <% if(!rooms.length){ %><p class="small">No physical rooms have been assigned yet.</p><% } %>
+</div>
+<script>
+function editType(t){document.getElementById('old_type_name').value=t.type_name;document.getElementById('type_name').value=t.type_name;document.getElementById('default_rate').value=t.default_rate;document.getElementById('typeSave').textContent='Update Room Type';window.scrollTo({top:0,behavior:'smooth'});}
+function clearTypeForm(){document.getElementById('old_type_name').value='';document.getElementById('type_name').value='';document.getElementById('default_rate').value='';document.getElementById('typeSave').textContent='Add Room Type';}
+</script>
