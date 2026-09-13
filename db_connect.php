@@ -1,6 +1,7 @@
 <?php
-<?php
-/**
+
+    
+**
  * Database connection + auto-setup.
  * Supports SQLite (default, zero setup), MySQL, or PostgreSQL — pick the
  * driver and (for MySQL/PostgreSQL) fill in credentials in config.php.
