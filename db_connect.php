@@ -1,5 +1,5 @@
 <?php
-<?php
+
 /**
  * Database connection + auto-setup.
  * Supports SQLite (default, zero setup), MySQL, or PostgreSQL — pick the
