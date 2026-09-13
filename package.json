@@ -1,0 +1,13 @@
+{
+  "name": "hotel-booking-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hotel booking system (PHP). This package.json exists only for convenience npm scripts — the app itself has no Node.js runtime dependency.",
+  "scripts": {
+    "start": "php -S localhost:8000",
+    "start:port": "php -S localhost:$PORT"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
