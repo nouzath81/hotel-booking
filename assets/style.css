@@ -1,7 +1,9 @@
 :root {
     --primary: #1e5f8c;
     --primary-dark: #164764;
+    --primary-light: #2f7fb3;
     --accent: #2ea36b;
+    --accent2: #f39c12;
     --danger: #c0392b;
     --bg: #f4f6f8;
     --border: #dde3e8;
@@ -13,35 +15,64 @@
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
 }
 
 .topbar {
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 14px 24px;
     flex-wrap: wrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
-.topbar .brand { font-weight: 700; font-size: 1.1rem; }
+.topbar .brand { font-weight: 700; font-size: 1.15rem; letter-spacing: .2px; }
+
+/* Nav links styled as small rounded, colorful pill buttons rather than plain text */
+.topbar nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
 
 .topbar nav a {
-    color: #cfe3f0;
+    color: #fff;
     text-decoration: none;
-    margin-left: 18px;
-    padding: 6px 10px;
-    border-radius: 4px;
+    margin-left: 0;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    transition: background .15s ease, transform .1s ease;
 }
 
-.topbar nav a:hover, .topbar nav a.active {
-    background: var(--primary);
+.topbar nav a:hover {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #23303d;
+    transform: translateY(-1px);
+}
+
+.topbar nav a.active {
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
 }
+
+/* Give a few key nav items their own accent color for quick visual scanning */
+.topbar nav a[href^="pos.php"],
+.topbar nav a[href^="pos_"] { background: rgba(46,163,107,0.35); }
+.topbar nav a[href^="reports"],
+.topbar nav a[href^="business_report"] { background: rgba(243,156,18,0.35); }
+.topbar nav a[href^="ai.php"] { background: rgba(155,89,182,0.35); }
 
 .container {
     max-width: 1100px;
@@ -49,15 +80,17 @@ body {
     padding: 0 16px 60px;
 }
 
-h1, h2, h3 { color: var(--primary-dark); }
+h1, h2, h3 { color: var(--primary-dark); font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; }
 
 .card {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(20,40,60,0.05);
 }
+
 
 .flex-between {
     display: flex;
@@ -72,17 +105,20 @@ h1, h2, h3 { color: var(--primary-dark); }
     background: var(--primary);
     color: #fff;
     border: none;
-    padding: 9px 16px;
-    border-radius: 5px;
+    padding: 9px 18px;
+    border-radius: 999px;
     cursor: pointer;
     text-decoration: none;
     font-size: 0.9rem;
+    font-weight: 600;
+    transition: background .15s ease, transform .1s ease;
 }
-.btn:hover { background: var(--primary-dark); }
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
 .btn-accent { background: var(--accent); }
+.btn-accent:hover { background: #24875a; }
 .btn-danger { background: var(--danger); }
 .btn-secondary { background: #7a8894; }
-.btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+.btn-sm { padding: 5px 12px; font-size: 0.8rem; }
 
 table {
     width: 100%;
