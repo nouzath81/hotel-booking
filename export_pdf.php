@@ -37,6 +37,28 @@ switch ($page) {
         foreach ($rows as $b) $addBookingLines($b);
         break;
 
+    case 'booking_list.php':
+        $lines[] = 'BOOKING LIST (FULL DETAILS)';
+        $q = trim((string)($_GET['q'] ?? ''));
+        $status = trim((string)($_GET['status'] ?? ''));
+        $dueOnly = isset($_GET['due_only']) && $_GET['due_only'] === '1';
+        $where = []; $params = [];
+        if ($q !== '') { $where[] = '(customer_name LIKE :q OR phone LIKE :q OR booking_no LIKE :q OR room_type LIKE :q OR room_no LIKE :q)'; $params['q'] = '%' . $q . '%'; }
+        if ($status !== '') { $where[] = 'status = :status'; $params['status'] = $status; }
+        $sql = 'SELECT * FROM bookings'; if ($where) $sql .= ' WHERE ' . implode(' AND ', $where); $sql .= ' ORDER BY id DESC';
+        $st = $pdo->prepare($sql); $st->execute($params); $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+        $sumTotal = 0.0; $sumAdvance = 0.0; $sumDue = 0.0; $shown = [];
+        foreach ($rows as $b) {
+            $bill = calcBill($b);
+            if ($dueOnly && $bill['balance_due'] <= 0.005) continue;
+            $shown[] = $b;
+            $sumTotal += $bill['grand_total']; $sumAdvance += $bill['advance']; $sumDue += $bill['balance_due'];
+        }
+        $lines[] = 'Showing: ' . count($shown) . ' | Total: ' . money($sumTotal) . ' | Advance: ' . money($sumAdvance) . ' | Due: ' . money($sumDue);
+        $lines[] = '';
+        foreach ($shown as $b) $addBookingLines($b);
+        break;
+
     case 'rooms.php':
         $lines[] = 'ROOMS & LIVE AVAILABILITY';
         $from = $_GET['checkin'] ?? date('Y-m-d');
