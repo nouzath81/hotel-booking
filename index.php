@@ -151,12 +151,14 @@ require __DIR__ . '/room-type-cards.php';
             <th>Check-out</th>
             <th>Status</th>
             <th>Total</th>
+            <th>Advance</th>
+            <th>Balance Due</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
     <?php if (!$bookings): ?>
-        <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px;">No bookings found.</td></tr>
+        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px;">No bookings found.</td></tr>
     <?php endif; ?>
     <?php foreach ($bookings as $b):
         $bill = calcBill($b);
@@ -169,6 +171,8 @@ require __DIR__ . '/room-type-cards.php';
             <td><?= h($b['checkout_date']) ?></td>
             <td><span class="badge <?= statusBadgeClass($b['status']) ?>"><?= h($b['status']) ?></span></td>
             <td><?= money($bill['grand_total']) ?></td>
+            <td><?= money($bill['advance']) ?></td>
+            <td<?= $bill['balance_due'] > 0.005 ? ' class="balance-due"' : '' ?>><?= money($bill['balance_due']) ?></td>
             <td class="actions">
                 <a class="btn btn-sm" href="view_booking.php?id=<?= $b['id'] ?>">View</a>
                 <?php if ($b['status'] !== 'Checked-Out' && $b['status'] !== 'Cancelled'): ?><a class="btn btn-sm btn-accent" href="checkout.php?id=<?= $b['id'] ?>">Checkout</a><?php endif; ?>
